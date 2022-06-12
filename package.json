@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts"
+    "dev": "nodemon --config nodemon.json src/index.ts",
+    "test:unit": "jest --verbose --coverage --testPathPattern=__tests__/unit"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.12",
+    "@types/jest": "^28.1.1",
+    "@types/supertest": "^2.0.12",
+    "jest": "^28.1.1",
     "nodemon": "^2.0.16",
+    "supertest": "^6.2.3",
+    "ts-jest": "^28.0.4",
     "ts-node": "^10.8.0",
     "typescript": "^4.6.4"
   },
