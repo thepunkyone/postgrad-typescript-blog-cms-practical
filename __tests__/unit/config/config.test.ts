@@ -11,5 +11,25 @@ describe("getConfig", () => {
 
       expect(config.port).toBe(4040);
     });
+
+    it("returns default port 5000 when process.env PORT is undefined", () => {
+      process.env = {
+        PORT: undefined,
+      };
+
+      const config: Config = getConfig();
+
+      expect(config.port).toBe(5000);
+    });
+
+    it("returns default port 5000 when process.env PORT is not a number", () => {
+      process.env = {
+        PORT: "not a number",
+      };
+
+      const config: Config = getConfig();
+
+      expect(config.port).toBe(5000);
+    });
   });
 });
