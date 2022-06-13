@@ -1,17 +1,18 @@
-import * as express from 'express'
-import * as cors from 'cors'
+import * as express from "express";
+import * as cors from "cors";
 
-const app:express.Application = express()
+import postRouter from "./routes/post";
+import * as postController from "./controllers/post";
 
-app.use(express.json())
-app.use(cors())
+const app: express.Application = express();
 
-// this removes the 'x-powered-by' header from the responses we send
-// if this were enabled it would reveal that our app is running in node.js
-// this could reveal possible attack vectors to malicious actors
-// alternately we could install and use the helmet middleware
-app.disable('x-powered-by')
+app.use(express.json());
+app.use(cors());
 
-app.get('/', (_: express.Request, res: express.Response) => res.sendStatus(200))
+app.disable("x-powered-by");
 
-export default app
+// pass the postController to the postRouter function
+// then configure the app to route all requests to /posts to the new router
+app.use("/posts", postRouter(postController));
+
+export default app;

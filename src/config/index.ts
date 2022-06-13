@@ -10,7 +10,7 @@ const isEnvironment = (env: string | undefined): env is Environment =>
   environments.includes(env as Environment);
 
 export default (): Config => {
-  const defaultPort = 5000;
+  const defaultPort = 4000;
   const defaultEnv = "production";
 
   const port: number =

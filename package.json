@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts",
+    "dev": "nodemon -r dotenv/config --config nodemon.json src/index.ts",
     "test:unit": "jest --verbose --coverage --testPathPattern=__tests__/unit"
   },
   "author": "",
