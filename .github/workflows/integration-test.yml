@@ -1,0 +1,45 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integration-test:
+    # make the DATABASE_URL available in our test environment
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432
+    # define the postgres container
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # add a health check for the container
+        # this makes sure we don't try and run tests until the database is ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Create Test Database
+        run: psql $DATABASE_URL -c 'CREATE DATABASE blog_test;'
+      - name: Install Dependencies
+        run: npm i
+      - name: Migrate Tables
+        run: npx knex migrate:latest --env test
+      - name: Run Integration Tests
+        run: npm run test:integration
