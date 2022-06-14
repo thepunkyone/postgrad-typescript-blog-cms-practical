@@ -11,8 +11,6 @@ app.use(cors());
 
 app.disable("x-powered-by");
 
-console.log("hello");
-
 // pass the postController to the postRouter function
 // then configure the app to route all requests to /posts to the new router
 app.use("/posts", postRouter(postController));
