@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config --config nodemon.json src/index.ts",
-    "test:unit": "jest --verbose --coverage --testPathPattern=__tests__/unit"
+    "test:unit": "jest --verbose --coverage --testPathPattern=__tests__/unit",
+    "test:integration": "jest --setupFiles dotenv/config --forceExit --runInBand --verbose --coverage --testPathPattern=__tests__/integration"
   },
   "author": "",
   "license": "ISC",
