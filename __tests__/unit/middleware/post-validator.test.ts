@@ -36,4 +36,41 @@ describe("postValidator", () => {
     // expect the NextFunction to have been invoked by the middleware
     expect(next).toHaveBeenCalled();
   });
+
+  it("returns a 400 if title is missing", () => {
+    const post = {
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: '"title" is required' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if title is empty", () => {
+    const post = {
+      title: "",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"title" is not allowed to be empty',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 });
