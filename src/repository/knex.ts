@@ -36,8 +36,17 @@ async function read(postId: string): Promise<Post> {
   }
 }
 
+async function update(postId: string, post: Post): Promise<Post> {
+  const [newPost] = await database("posts")
+    .where({ id: postId })
+    .update(post)
+    .returning("*");
+  return newPost as Post;
+}
+
 export default {
   create,
   list,
   read,
+  update,
 };

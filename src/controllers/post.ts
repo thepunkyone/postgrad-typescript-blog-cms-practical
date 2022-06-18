@@ -48,3 +48,15 @@ export async function read(req: Request, res: Response): Promise<void> {
     handleException(exception, res);
   }
 }
+
+export async function update(req: Request, res: Response): Promise<void> {
+  const postId: string = req.params.id;
+  const postUpdate: Post = req.body;
+  try {
+    const post: Post = await repository.update(postId, postUpdate);
+
+    res.status(200).json({ post });
+  } catch (exception) {
+    handleException(exception, res);
+  }
+}

@@ -19,4 +19,5 @@ export default interface PostRepository {
   create(post: Post): Promise<Post>;
   list(): Promise<Post[]>;
   read(postId: string): Promise<Post>;
+  update(postId: string, post: Post): Promise<Post>;
 }
