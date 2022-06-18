@@ -1,4 +1,4 @@
-import { Post } from "./post";
+import { Post, PostNotFoundException } from "./post";
 import knex, { Knex } from "knex";
 import * as KnexConfig from "../../knexfile";
 import { v4 as uuidv4 } from "uuid";
@@ -27,7 +27,17 @@ async function list(): Promise<Post[]> {
   return posts as Post[];
 }
 
+async function read(postId: string): Promise<Post> {
+  const [post] = await database("posts").where({ id: postId });
+  if (!post) {
+    throw new PostNotFoundException(`post ${postId} not found`);
+  } else {
+    return post as Post;
+  }
+}
+
 export default {
   create,
   list,
+  read,
 };

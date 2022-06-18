@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Post } from "../../../src/repository/post";
+import { Post, PostNotFoundException } from "../../../src/repository/post";
 import repository from "../../../src/repository/knex";
-import { create, list } from "../../../src/controllers/post";
+import { create, list, read } from "../../../src/controllers/post";
 
 // This replaces the imported repository code with a jest mock, it lets us mock the knex code without having to manually perform dependency injection
 jest.mock("../../../src/repository/knex");
@@ -87,6 +87,83 @@ describe("post", () => {
       await list(req, res);
 
       expect(repo).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "something went wrong" });
+
+      repo.mockReset();
+    });
+  });
+
+  describe("read", () => {
+    it("returns 200 and the requested post", async () => {
+      const post: Post = {
+        id: "postId",
+        title: "",
+        published: "",
+        blurb: "",
+        content: "",
+        author: "",
+      };
+      const repo = repository.read as jest.MockedFunction<
+        (id: string) => Promise<Post>
+      >;
+      repo.mockImplementation(() => Promise.resolve(post));
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await read(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ post });
+
+      repo.mockReset();
+    });
+
+    it("returns 404 if post does not exist", async () => {
+      const repo = repository.read as jest.MockedFunction<
+        (id: string) => Promise<Post>
+      >;
+      repo.mockImplementation(() =>
+        Promise.reject(new PostNotFoundException("post not found"))
+      );
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await read(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: "post not found" });
+
+      repo.mockReset();
+    });
+
+    it("returns 500 if an unexpected error occurs", async () => {
+      const repo = repository.read as jest.MockedFunction<
+        (id: string) => Promise<Post>
+      >;
+      repo.mockImplementation(() =>
+        Promise.reject(new Error("something went wrong"))
+      );
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await read(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: "something went wrong" });
 

@@ -36,3 +36,15 @@ export async function list(_: Request, res: Response): Promise<void> {
     handleException(exception, res);
   }
 }
+
+export async function read(req: Request, res: Response): Promise<void> {
+  const postId: string = req.params.id;
+
+  try {
+    const post: Post = await repository.read(postId);
+
+    res.status(200).json({ post });
+  } catch (exception) {
+    handleException(exception, res);
+  }
+}

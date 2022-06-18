@@ -18,4 +18,5 @@ export class PostNotFoundException extends Error {
 export default interface PostRepository {
   create(post: Post): Promise<Post>;
   list(): Promise<Post[]>;
+  read(postId: string): Promise<Post>;
 }
