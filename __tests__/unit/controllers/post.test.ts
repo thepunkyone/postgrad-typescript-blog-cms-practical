@@ -1,7 +1,13 @@
 import { Request, Response } from "express";
 import { Post, PostNotFoundException } from "../../../src/repository/post";
 import repository from "../../../src/repository/knex";
-import { create, list, read, update } from "../../../src/controllers/post";
+import {
+  create,
+  list,
+  read,
+  update,
+  destroy,
+} from "../../../src/controllers/post";
 
 // This replaces the imported repository code with a jest mock, it lets us mock the knex code without having to manually perform dependency injection
 jest.mock("../../../src/repository/knex");
@@ -268,6 +274,71 @@ describe("post", () => {
       expect(repo).toHaveBeenNthCalledWith(1, "postId", post);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: "something went wrong" });
+
+      repo.mockReset();
+    });
+  });
+
+  describe("destroy", () => {
+    it("returns 204 if post deleted", async () => {
+      const repo = repository.destroy as jest.MockedFunction<
+        (id: string) => Promise<void>
+      >;
+      repo.mockImplementation(() => Promise.resolve());
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        sendStatus: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await destroy(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
+      expect(res.sendStatus).toHaveBeenCalledWith(204);
+
+      repo.mockReset();
+    });
+
+    it("returns 404 if post not found", async () => {
+      const repo = repository.destroy as jest.MockedFunction<
+        (id: string) => Promise<void>
+      >;
+      repo.mockImplementation(() =>
+        Promise.reject(new PostNotFoundException("post not found"))
+      );
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await destroy(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
+      expect(res.status).toHaveBeenCalledWith(404);
+
+      repo.mockReset();
+    });
+
+    it("returns 500 if unexpected error occurs", async () => {
+      const repo = repository.destroy as jest.MockedFunction<
+        (id: string) => Promise<void>
+      >;
+      repo.mockImplementation(() =>
+        Promise.reject(new Error("post not found"))
+      );
+
+      const req = ({ params: { id: "postId" } } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await destroy(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, "postId");
+      expect(res.status).toHaveBeenCalledWith(500);
 
       repo.mockReset();
     });

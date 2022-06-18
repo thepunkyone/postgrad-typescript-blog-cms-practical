@@ -20,4 +20,5 @@ export default interface PostRepository {
   list(): Promise<Post[]>;
   read(postId: string): Promise<Post>;
   update(postId: string, post: Post): Promise<Post>;
+  destroy(postId: string): Promise<void>;
 }

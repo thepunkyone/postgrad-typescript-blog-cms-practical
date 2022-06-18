@@ -60,3 +60,14 @@ export async function update(req: Request, res: Response): Promise<void> {
     handleException(exception, res);
   }
 }
+
+export async function destroy(req: Request, res: Response): Promise<void> {
+  const postId: string = req.params.id;
+  try {
+    await repository.destroy(postId);
+
+    res.sendStatus(204);
+  } catch (exception) {
+    handleException(exception, res);
+  }
+}

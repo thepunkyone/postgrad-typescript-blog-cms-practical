@@ -44,9 +44,17 @@ async function update(postId: string, post: Post): Promise<Post> {
   return newPost as Post;
 }
 
+async function destroy(postId: string): Promise<void> {
+  const deletedRows = await database("posts").where({ id: postId }).del();
+  if (!deletedRows) {
+    throw new PostNotFoundException(`post ${postId} not found`);
+  }
+}
+
 export default {
   create,
   list,
   read,
   update,
+  destroy,
 };
