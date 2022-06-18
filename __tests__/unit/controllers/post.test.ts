@@ -48,6 +48,37 @@ describe("post", () => {
       // Finally, we reset the mock to avoid affecting the behaviour in other tests
       repo.mockReset();
     });
+
+    it("returns 500 if an unexpected error occurs", async () => {
+      const post: Post = {
+        title: "",
+        published: "",
+        blurb: "",
+        content: "",
+        author: "",
+      };
+
+      const repo = repository.create as jest.MockedFunction<
+        (data: Post) => Promise<Post>
+      >;
+      repo.mockImplementation(() =>
+        Promise.reject(new Error("something went wrong"))
+      );
+
+      const req = ({ body: post } as unknown) as Request;
+      const res = ({
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown) as Response;
+
+      await create(req, res);
+
+      expect(repo).toHaveBeenNthCalledWith(1, post);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "something went wrong" });
+
+      repo.mockReset();
+    });
   });
 
   describe("list", () => {
