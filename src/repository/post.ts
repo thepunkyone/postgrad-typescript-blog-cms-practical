@@ -7,6 +7,15 @@ export interface Post {
   author: string;
 }
 
-export interface PostRepository {
+export class PostNotFoundException extends Error {
+  constructor(message: string) {
+    super(message);
+
+    this.name = "PostNotFoundException";
+  }
+}
+
+export default interface PostRepository {
   create(post: Post): Promise<Post>;
+  list(): Promise<Post[]>;
 }

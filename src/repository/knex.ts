@@ -16,6 +16,18 @@ async function create(post: Post): Promise<Post> {
   return newPost as Post;
 }
 
+async function list(): Promise<Post[]> {
+  const posts = await database("posts").select([
+    "id",
+    "title",
+    "published",
+    "author",
+    "blurb",
+  ]);
+  return posts as Post[];
+}
+
 export default {
   create,
+  list,
 };
