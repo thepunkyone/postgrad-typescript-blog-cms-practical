@@ -23,6 +23,11 @@ describe("post", () => {
         .mockImplementation((_: express.Request, res: express.Response) => {
           res.sendStatus(200);
         }),
+      read: jest
+        .fn()
+        .mockImplementation((_: express.Request, res: express.Response) => {
+          res.sendStatus(200);
+        }),
     };
 
     // create a new router and pass our stubbed controller into it
@@ -48,6 +53,14 @@ describe("post", () => {
 
         // expect the create method on our stubbed controller to have been called
         expect(controller.list).toHaveBeenCalledTimes(1);
+      });
+
+      it("directs request to read post controller", async () => {
+        // make a POST request to our test app
+        await request(testApp).get("/posts/1234");
+
+        // expect the create method on our stubbed controller to have been called
+        expect(controller.read).toHaveBeenCalledTimes(1);
       });
     });
   });
