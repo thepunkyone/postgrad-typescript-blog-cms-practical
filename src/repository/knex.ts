@@ -1,4 +1,4 @@
-import { Post } from "./post";
+import { Post, PostNotFoundException } from "./post";
 import knex, { Knex } from "knex";
 import * as KnexConfig from "../../knexfile";
 import { v4 as uuidv4 } from "uuid";
@@ -16,6 +16,45 @@ async function create(post: Post): Promise<Post> {
   return newPost as Post;
 }
 
+async function list(): Promise<Post[]> {
+  const posts = await database("posts").select([
+    "id",
+    "title",
+    "published",
+    "author",
+    "blurb",
+  ]);
+  return posts as Post[];
+}
+
+async function read(postId: string): Promise<Post> {
+  const [post] = await database("posts").where({ id: postId });
+  if (!post) {
+    throw new PostNotFoundException(`post ${postId} not found`);
+  } else {
+    return post as Post;
+  }
+}
+
+async function update(postId: string, post: Post): Promise<Post> {
+  const [newPost] = await database("posts")
+    .where({ id: postId })
+    .update(post)
+    .returning("*");
+  return newPost as Post;
+}
+
+async function destroy(postId: string): Promise<void> {
+  const deletedRows = await database("posts").where({ id: postId }).del();
+  if (!deletedRows) {
+    throw new PostNotFoundException(`post ${postId} not found`);
+  }
+}
+
 export default {
   create,
+  list,
+  read,
+  update,
+  destroy,
 };
