@@ -73,4 +73,63 @@ describe("postValidator", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("returns a 400 if a published date is missing", () => {
+    const post = {
+      title: "Title",
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"published" is required',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if a published date is empty", () => {
+    const post = {
+      title: "Title",
+      published: "",
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"published" must be in ISO 8601 date format',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if a published is not a valid ISO date string", () => {
+    const post = {
+      title: "Title",
+      published: "22/02/2021",
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"published" must be in ISO 8601 date format',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 });

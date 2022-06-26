@@ -3,6 +3,7 @@ import * as joi from "joi";
 
 const postSchema = joi.object({
   title: joi.string().required(),
+  published: joi.date().iso().required(),
 });
 
 export default (req: Request, res: Response, next: NextFunction): void => {
