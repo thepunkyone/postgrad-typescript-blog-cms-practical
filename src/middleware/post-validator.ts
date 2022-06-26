@@ -5,6 +5,7 @@ const postSchema = joi.object({
   title: joi.string().required(),
   published: joi.date().iso().required(),
   blurb: joi.string().required(),
+  content: joi.string().base64().required(),
 });
 
 export default (req: Request, res: Response, next: NextFunction): void => {

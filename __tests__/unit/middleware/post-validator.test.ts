@@ -169,4 +169,63 @@ describe("postValidator", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("returns a 400 if content is missing", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"content" is required',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if content is empty", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: "",
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"content" is not allowed to be empty',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if content is not base64 encoded", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: "Some content here",
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"content" must be a valid base64 string',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 });
