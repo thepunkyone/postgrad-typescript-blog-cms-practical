@@ -1,5 +1,5 @@
-import { Knex } from "knex";
 import "dotenv/config";
+import { Knex } from "knex";
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
