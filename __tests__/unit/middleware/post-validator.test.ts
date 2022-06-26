@@ -228,4 +228,43 @@ describe("postValidator", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("returns a 400 if author is missing", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"author" is required',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if author is empty", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "blurb",
+      content: Buffer.from("content").toString("base64"),
+      author: "",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"author" is not allowed to be empty',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 });
