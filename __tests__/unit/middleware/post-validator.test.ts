@@ -132,4 +132,41 @@ describe("postValidator", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("returns a 400 if blurb is missing", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: '"blurb" is required' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 if blurb is empty", () => {
+    const post = {
+      title: "Title",
+      published: new Date().toISOString(),
+      blurb: "",
+      content: Buffer.from("content").toString("base64"),
+      author: "author",
+    } as Post;
+
+    const req = ({ body: post } as unknown) as Request;
+
+    postValidator(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: '"blurb" is not allowed to be empty',
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 });
