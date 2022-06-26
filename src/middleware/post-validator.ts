@@ -10,9 +10,7 @@ const postSchema = joi.object({
 });
 
 export default (req: Request, res: Response, next: NextFunction): void => {
-  const result: joi.ValidationResult = postSchema.validate(req.body, {
-    allowUnknown: true,
-  });
+  const result: joi.ValidationResult = postSchema.validate(req.body);
 
   if (result.error) {
     res.status(400).json({ error: result.error.message });
